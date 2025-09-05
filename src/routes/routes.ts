@@ -1,24 +1,25 @@
-import express from "express";
-import {register} from "../controller/auth.controller";
+import express from 'express';
+import { check, login, register } from '../controller/auth.controller';
+import { getUsers } from '../controller/admin.controller';
+import { checkRole } from '../middleware/check.role.middleware';
+import { ROLES } from '../models/user.model';
+import { authMiddleware } from '../middleware/auth.middleware';
 const router = express.Router();
 
-router.post("/login", async (req, res) => {
+router.post('/login', login);
+router.post('/register', register);
 
-})
-router.post("/register", register);
-router.get("/auth", async (req, res) => {
-    res.json({message : 'fdsfdsfdsfsdf'})
-})
-router.get("/getUsersById/:userId", async (req, res) => {
-    const { userId } = req.params;
-    res.json({ message: `User ID = ${userId}` });
-});
+router.get('/check', authMiddleware, check);
 
-router.get("/getUsers", async (req, res) => {
-    res.json({ message: "Все пользователи" });
-});
-router.patch("/banned/:userId", async (req, res) => {
+router.get(
+    '/getUsersById/:userId',
+    authMiddleware,
+    checkRole(ROLES.ADMIN),
+    getUsers,
+); // --=---
 
-})
+router.get('/getUsers', authMiddleware, checkRole(ROLES.ADMIN), getUsers);
+
+router.patch('/banned/:userId', authMiddleware, checkRole(ROLES.ADMIN)); // --
 
 export default router;
