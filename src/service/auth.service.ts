@@ -6,6 +6,7 @@ interface UserData {
     email: string;
     password: string;
 }
+
 const generateToken = (id: number | undefined, email: string, role: ROLES) => {
     return jwt.sign(
         { id: id, email: email, role: role },
@@ -50,5 +51,6 @@ export const loginUser = async (userData: UserData) => {
 export const checkAuth = async (
     user: { id: number; email: string; role: ROLES } | undefined,
 ) => {
-    return generateToken(user!.id, user!.email, user!.role);
+    const token = generateToken(user!.id, user!.email, user!.role);
+    return { token: token, role: user!.role };
 };
